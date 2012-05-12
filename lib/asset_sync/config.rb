@@ -97,7 +97,7 @@ module AssetSync
 
     def assets_prefix
       # Fix for Issue #38 when Rails.config.assets.prefix starts with a slash
-      Rails.application.config.assets.prefix.sub(/^\//, '')
+      'assets'
     end
 
     def load_yml!
