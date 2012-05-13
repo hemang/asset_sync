@@ -1,7 +1,5 @@
 class Engine < Rails::Engine
 
-  engine_name "asset_sync"
-
   initializer "asset_sync config", :group => :all do |app|
     app_initializer = Rails.root.join('config', 'initializers', 'asset_sync.rb').to_s
     app_yaml = Rails.root.join('config', 'asset_sync.yml').to_s
