@@ -95,6 +95,12 @@ module AssetSync
 
       gzipped = "#{path}/#{f}.gz"
       ignore = false
+      
+      
+      ext = File.extname(f)   #ext = File.extname( f )[1..-1]  
+      ext = File.extname(File.basename(f, ".gz")) if ext == ".gz"
+      
+      mime = Mime::Type.lookup_by_extension( ext )
 
       if config.gzip? && File.extname(f) == ".gz"
         # Don't bother uploading gzipped assets if we are in gzip_compression mode
@@ -107,8 +113,6 @@ module AssetSync
 
         if gzipped_size < original_size
           percentage = ((gzipped_size.to_f/original_size.to_f)*100).round(2)
-          ext = File.extname( f )[1..-1]
-          mime = Mime::Type.lookup_by_extension( ext )
           file.merge!({
             :key => f,
             :body => File.open(gzipped),
@@ -125,9 +129,16 @@ module AssetSync
           # set content encoding for gzipped files this allows cloudfront to properly handle requests with Accept-Encoding
           # http://docs.amazonwebservices.com/AmazonCloudFront/latest/DeveloperGuide/ServingCompressedFiles.html
           file.merge!({
+            :content_type     => mime,
             :content_encoding => 'gzip'
           })
+        else
+          #Not gzipping, add mime type
+          file.merge!({
+            :content_type     => mime
+          })
         end
+        
         log "Uploading: #{f}"
       end
 
