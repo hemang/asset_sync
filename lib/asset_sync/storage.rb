@@ -93,16 +93,19 @@ module AssetSync
         :expires => CGI.rfc1123_date(Time.now + 1.year)
       }
 
-      gzipped = "#{path}/#{f}.gz"
+      gzipped = "#{path}/#{f}.#{config.gzip_suffix}"
       ignore = false
       
       
       ext = File.extname(f)   #ext = File.extname( f )[1..-1]  
-      ext = File.extname(File.basename(f, ".gz")) if ext == ".gz"
+      ext = File.extname(File.basename(f, ".#{config.gzip_suffix}")) if ext == ".#{config.gzip_suffix}"
       
       mime = Mime::Type.lookup_by_extension( ext )
+      file.merge!({
+        :content_type     => mime
+      })
 
-      if config.gzip? && File.extname(f) == ".gz"
+      if config.gzip? && File.extname(f) == ".#{config.gzip_suffix}"
         # Don't bother uploading gzipped assets if we are in gzip_compression mode
         # as we will overwrite file.css with file.css.gz if it exists.
         log "Ignoring: #{f}"
@@ -116,7 +119,6 @@ module AssetSync
           file.merge!({
             :key => f,
             :body => File.open(gzipped),
-            :content_type     => mime,
             :content_encoding => 'gzip'
           })
           log "Uploading: #{gzipped} in place of #{f} saving #{percentage}%"
@@ -125,17 +127,11 @@ module AssetSync
           log "Uploading: #{f} instead of #{gzipped} (compression increases this file by #{percentage}%)"
         end
       else
-        if !config.gzip? && File.extname(f) == ".gz"
+        if !config.gzip? && File.extname(f) == ".#{config.gzip_suffix}"
           # set content encoding for gzipped files this allows cloudfront to properly handle requests with Accept-Encoding
           # http://docs.amazonwebservices.com/AmazonCloudFront/latest/DeveloperGuide/ServingCompressedFiles.html
           file.merge!({
-            :content_type     => mime,
             :content_encoding => 'gzip'
-          })
-        else
-          #Not gzipping, add mime type
-          file.merge!({
-            :content_type     => mime
           })
         end
         
@@ -148,6 +144,7 @@ module AssetSync
     def upload_files
       # get a fresh list of remote files
       remote_files = ignore_existing_remote_files? ? [] : get_remote_files
+      
       # fixes: https://github.com/rumblelabs/asset_sync/issues/19
       local_files_to_upload = local_files - remote_files + always_upload_files
 

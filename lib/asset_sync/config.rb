@@ -11,6 +11,7 @@ module AssetSync
     attr_accessor :fail_silently
     attr_accessor :always_upload
     attr_accessor :enabled
+    attr_accessor :gzip_suffix
 
     # FOG configuration
     attr_accessor :fog_provider          # Currently Supported ['AWS', 'Rackspace']
@@ -46,6 +47,7 @@ module AssetSync
       self.fail_silently = false
       self.always_upload = []
       self.enabled = true
+      self.gzip_suffix = 'gzip'
       load_yml! if yml_exists?
     end
 
@@ -114,6 +116,7 @@ module AssetSync
       self.google_storage_access_key_id     = yml["google_storage_access_key_id"]
       self.existing_remote_files  = yml["existing_remote_files"] if yml.has_key?("existing_remote_files")
       self.gzip_compression       = yml["gzip_compression"] if yml.has_key?("gzip_compression")
+      self.gzip_suffix            = yml["gzip_suffix"] if yml.has_key?("gzip_suffix")
       self.manifest               = yml["manifest"] if yml.has_key?("manifest")
       self.fail_silently          = yml["fail_silently"] if yml.has_key?("fail_silently")
       self.always_upload          = yml["always_upload"] if yml.has_key?("always_upload")

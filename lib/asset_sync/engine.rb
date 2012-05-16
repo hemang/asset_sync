@@ -28,6 +28,7 @@ class Engine < Rails::Engine
         end
         config.existing_remote_files = ENV['ASSET_SYNC_EXISTING_REMOTE_FILES'] || "keep"
         config.gzip_compression = ENV['ASSET_SYNC_GZIP_COMPRESSION'] == 'true'
+        config.gzip_suffix = ENV['ASSET_SYNC_GZIP_SUFFIX'] || 'gzip'
         config.manifest = ENV['ASSET_SYNC_MANIFEST'] == 'true'
       end
     end
