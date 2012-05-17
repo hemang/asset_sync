@@ -27,7 +27,7 @@ module AssetSync
     end
 
     def path
-      Rails.public_path
+      Rails.public_path + self.config.assets_prefix
     end
     
     def ignored_files
@@ -54,7 +54,7 @@ module AssetSync
     end
 
     def always_upload_files
-      self.config.always_upload.map { |f| File.join(self.config.assets_prefix, f) }
+      self.config.always_upload
     end
 
     def get_local_files
@@ -62,14 +62,14 @@ module AssetSync
         if File.exists?(self.config.manifest_path)
           yml = YAML.load(IO.read(self.config.manifest_path))
           log "Using: Manifest #{self.config.manifest_path}"
-          return yml.values.map { |f| File.join(self.config.assets_prefix, f) }
+          return yml.values
         else
           log "Warning: manifest.yml not found at #{self.config.manifest_path}"
         end
       end
-      log "Using: Directory Search of #{path}/#{self.config.assets_prefix}"
-      Dir.chdir(path) do
-        Dir["#{self.config.assets_prefix}/**/**"]
+      log "Using: Directory Search of #{path}"
+      Dir.chdir(path)) do
+        Dir["/**/**"]
       end
     end
 
