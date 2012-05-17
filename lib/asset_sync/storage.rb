@@ -15,7 +15,7 @@ module AssetSync
 
     def bucket
       # fixes: https://github.com/rumblelabs/asset_sync/issues/18
-      @bucket ||= connection.directories.get(self.config.fog_directory)
+      @bucket ||= connection.directories.get(self.config.fog_directory, :prefix => self.config.assets_prefix)
     end
 
     def log(msg)
