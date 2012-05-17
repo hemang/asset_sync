@@ -36,7 +36,7 @@ module AssetSync
     end
 
     def log(msg)
-      stdout.puts msg 
+      stdout.puts msg if !(self.config.log == false)
     end
 
     def enabled?

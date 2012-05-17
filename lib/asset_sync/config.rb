@@ -46,7 +46,7 @@ module AssetSync
       self.fog_region = nil
       self.existing_remote_files = 'keep'
       self.gzip_compression = false
-      self.log = false
+      self.log = true
       self.manifest = false
       # Fix for Issue #38 when Rails.config.assets.prefix starts with a slash
       # Rails.application.config.assets.prefix.sub(/^\//, '')
