@@ -36,7 +36,7 @@ module AssetSync
     end
 
     def log(msg)
-      stdout.puts msg if ENV["RAILS_GROUPS"] == "assets"
+      stdout.puts msg 
     end
 
     def enabled?
