@@ -30,6 +30,7 @@ class Engine < Rails::Engine
         config.gzip_compression = ENV['ASSET_SYNC_GZIP_COMPRESSION'] == 'true'
         config.gzip_suffix = ENV['ASSET_SYNC_GZIP_SUFFIX'] || 'gzip'
         config.manifest = ENV['ASSET_SYNC_MANIFEST'] == 'true'
+        config.manifest = ENV['ASSET_PREFIX'] || 'assets'
       end
     end
 

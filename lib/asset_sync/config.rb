@@ -8,6 +8,7 @@ module AssetSync
     attr_accessor :existing_remote_files # What to do with your existing remote files? (keep or delete)
     attr_accessor :gzip_compression
     attr_accessor :manifest
+    attr_accessor :assets_prefix
     attr_accessor :fail_silently
     attr_accessor :always_upload
     attr_accessor :enabled
@@ -45,6 +46,9 @@ module AssetSync
       self.existing_remote_files = 'keep'
       self.gzip_compression = false
       self.manifest = false
+      # Fix for Issue #38 when Rails.config.assets.prefix starts with a slash
+      # Rails.application.config.assets.prefix.sub(/^\//, '')
+      self.assets_prefix = 'assets'
       self.fail_silently = false
       self.always_upload = []
       self.ignored_files = []
@@ -100,8 +104,7 @@ module AssetSync
     end
 
     def assets_prefix
-      # Fix for Issue #38 when Rails.config.assets.prefix starts with a slash
-      'assets'
+      self.assets_prefix
     end
 
     def load_yml!
@@ -120,6 +123,7 @@ module AssetSync
       self.gzip_compression       = yml["gzip_compression"] if yml.has_key?("gzip_compression")
       self.gzip_suffix            = yml["gzip_suffix"] if yml.has_key?("gzip_suffix")
       self.manifest               = yml["manifest"] if yml.has_key?("manifest")
+      self.assets_prefix              = yml["assets_prefix"] if yml.has_key?("assets_prefix")
       self.fail_silently          = yml["fail_silently"] if yml.has_key?("fail_silently")
       self.always_upload          = yml["always_upload"] if yml.has_key?("always_upload")
       self.ignored_files          = yml["ignored_files"] if yml.has_key?("ignored_files")
