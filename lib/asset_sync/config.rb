@@ -11,6 +11,7 @@ module AssetSync
     attr_accessor :fail_silently
     attr_accessor :always_upload
     attr_accessor :enabled
+    attr_accessor :ignored_files
     attr_accessor :gzip_suffix
 
     # FOG configuration
@@ -46,6 +47,7 @@ module AssetSync
       self.manifest = false
       self.fail_silently = false
       self.always_upload = []
+      self.ignored_files = []
       self.enabled = true
       self.gzip_suffix = 'gzip'
       load_yml! if yml_exists?
@@ -120,6 +122,7 @@ module AssetSync
       self.manifest               = yml["manifest"] if yml.has_key?("manifest")
       self.fail_silently          = yml["fail_silently"] if yml.has_key?("fail_silently")
       self.always_upload          = yml["always_upload"] if yml.has_key?("always_upload")
+      self.ignored_files          = yml["ignored_files"] if yml.has_key?("ignored_files")
 
       # TODO deprecate the other old style config settings. FML.
       self.aws_access_key_id      = yml["aws_access_key"] if yml.has_key?("aws_access_key")
