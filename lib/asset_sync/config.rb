@@ -14,6 +14,7 @@ module AssetSync
     attr_accessor :enabled
     attr_accessor :ignored_files
     attr_accessor :gzip_suffix
+    attr_accessor :log
 
     # FOG configuration
     attr_accessor :fog_provider          # Currently Supported ['AWS', 'Rackspace']
@@ -45,6 +46,7 @@ module AssetSync
       self.fog_region = nil
       self.existing_remote_files = 'keep'
       self.gzip_compression = false
+      self.log = false
       self.manifest = false
       # Fix for Issue #38 when Rails.config.assets.prefix starts with a slash
       # Rails.application.config.assets.prefix.sub(/^\//, '')
@@ -58,8 +60,9 @@ module AssetSync
     end
 
     def manifest_path
-      directory =
-        Rails.application.config.assets.manifest || default_manifest_directory
+      #For Rails 3.1
+      #Rails.application.config.assets.manifest || default_manifest_directory
+      directory = default_manifest_directory
       File.join(directory, "manifest.yml")
     end
 
@@ -103,10 +106,6 @@ module AssetSync
       Rails.root.join("config", "asset_sync.yml").to_s
     end
 
-    def assets_prefix
-      self.assets_prefix
-    end
-
     def load_yml!
       self.enabled               = yml["enabled"] if yml.has_key?('enabled')
       self.fog_provider          = yml["fog_provider"]
@@ -123,10 +122,11 @@ module AssetSync
       self.gzip_compression       = yml["gzip_compression"] if yml.has_key?("gzip_compression")
       self.gzip_suffix            = yml["gzip_suffix"] if yml.has_key?("gzip_suffix")
       self.manifest               = yml["manifest"] if yml.has_key?("manifest")
-      self.assets_prefix              = yml["assets_prefix"] if yml.has_key?("assets_prefix")
+      self.assets_prefix          = yml["assets_prefix"] if yml.has_key?("assets_prefix")
       self.fail_silently          = yml["fail_silently"] if yml.has_key?("fail_silently")
       self.always_upload          = yml["always_upload"] if yml.has_key?("always_upload")
       self.ignored_files          = yml["ignored_files"] if yml.has_key?("ignored_files")
+      self.log                    = yml["log"] if yml.has_key?("log")
 
       # TODO deprecate the other old style config settings. FML.
       self.aws_access_key_id      = yml["aws_access_key"] if yml.has_key?("aws_access_key")
