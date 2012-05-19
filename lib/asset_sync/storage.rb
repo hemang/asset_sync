@@ -115,16 +115,16 @@ module AssetSync
       gzipped = "#{path}/#{f}.#{config.gzip_suffix}"
       ignore = false
       
+      #[1..-1] removes the dot in the extension
+      ext = File.extname(f)[1..-1]  
+      ext = File.extname(File.basename(f, "#{config.gzip_suffix}"))[1..-1] if ext == "#{config.gzip_suffix}"
       
-      ext = File.extname(f)   #ext = File.extname( f )[1..-1]  
-      ext = File.extname(File.basename(f, ".#{config.gzip_suffix}")) if ext == ".#{config.gzip_suffix}"
-      
-      mime = Mime::Type.lookup_by_extension( ext )
+      mime = Mime::Type.lookup_by_extension(ext)
       file.merge!({
         :content_type     => mime
       })
 
-      if config.gzip? && File.extname(f) == ".#{config.gzip_suffix}"
+      if config.gzip? && File.extname(f) == "#{config.gzip_suffix}"
         # Don't bother uploading gzipped assets if we are in gzip_compression mode
         # as we will overwrite file.css with file.css.gz if it exists.
         log "Ignoring: #{f}"
