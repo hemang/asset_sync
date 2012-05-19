@@ -116,15 +116,21 @@ module AssetSync
       ignore = false
       
       #[1..-1] removes the dot in the extension
-      ext = File.extname(f)[1..-1]  
-      ext = File.extname(File.basename(f, "#{config.gzip_suffix}"))[1..-1] if ext == "#{config.gzip_suffix}"
+      ext = File.extname(f)[1..-1]
+      is_gz = false
+      
+      if ext == config.gzip_suffix
+        ext = File.extname(File.basename(f, ".#{config.gzip_suffix}"))[1..-1]
+        is_gz = true 
+      end
+      
       
       mime = Mime::Type.lookup_by_extension(ext)
       file.merge!({
-        :content_type     => mime
-      })
+        :content_type     => mime.to_s
+      }) unless mime
 
-      if config.gzip? && File.extname(f) == "#{config.gzip_suffix}"
+      if config.gzip? && is_gz
         # Don't bother uploading gzipped assets if we are in gzip_compression mode
         # as we will overwrite file.css with file.css.gz if it exists.
         log "Ignoring: #{f}"
@@ -146,7 +152,7 @@ module AssetSync
           log "Uploading: #{f} instead of #{gzipped} (compression increases this file by #{percentage}%)"
         end
       else
-        if !config.gzip? && File.extname(f) == ".#{config.gzip_suffix}"
+        if !config.gzip? && is_gz
           # set content encoding for gzipped files this allows cloudfront to properly handle requests with Accept-Encoding
           # http://docs.amazonwebservices.com/AmazonCloudFront/latest/DeveloperGuide/ServingCompressedFiles.html
           file.merge!({
