@@ -128,7 +128,7 @@ module AssetSync
       mime = Mime::Type.lookup_by_extension(ext)
       file.merge!({
         :content_type     => mime.to_s
-      }) unless mime
+      }) if mime
 
       if config.gzip? && is_gz
         # Don't bother uploading gzipped assets if we are in gzip_compression mode
