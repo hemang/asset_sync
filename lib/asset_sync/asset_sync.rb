@@ -6,8 +6,8 @@ module AssetSync
       @config = data
     end
 
-    def config
-      @config ||= Config.new
+    def config(env='development')
+      @config ||= Config.new(env)
       @config
     end
 
@@ -20,15 +20,15 @@ module AssetSync
       @storage ||= Storage.new(self.config)
     end
 
-    def sync
+    def sync(env='development')
       return unless AssetSync.enabled?
 
       if config.fail_silently?
-        self.warn config.errors.full_messages.join(', ') unless config && config.valid?
+        self.warn config.errors.full_messages.join(', ') unless config(env) && config.valid?
       else
-        raise Config::Invalid.new(config.errors.full_messages.join(', ')) unless config && config.valid?
+        raise Config::Invalid.new(config.errors.full_messages.join(', ')) unless config(env) && config.valid?
       end
-      self.storage.sync if config && config.valid?
+      self.storage.sync if config(env) && config.valid?
     end
 
     def warn(msg)

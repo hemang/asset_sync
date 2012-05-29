@@ -15,6 +15,7 @@ module AssetSync
     attr_accessor :ignored_files
     attr_accessor :gzip_suffix
     attr_accessor :log
+    attr_accessor :env
 
     # FOG configuration
     attr_accessor :fog_provider          # Currently Supported ['AWS', 'Rackspace']
@@ -42,7 +43,7 @@ module AssetSync
     validates :google_storage_secret_access_key,  :presence => true, :if => :google?
     validates :google_storage_access_key_id,      :presence => true, :if => :google?
 
-    def initialize
+    def initialize(env='development')
       self.fog_region = nil
       self.existing_remote_files = 'keep'
       self.gzip_compression = false
@@ -56,6 +57,7 @@ module AssetSync
       self.ignored_files = []
       self.enabled = true
       self.gzip_suffix = 'gzip'
+      self.env = 'development'
       load_yml! if yml_exists?
     end
 
@@ -99,7 +101,7 @@ module AssetSync
     end
 
     def yml
-      @yml ||= YAML.load(ERB.new(IO.read(yml_path)).result)[Rails.env] rescue nil || {}
+      @yml ||= YAML.load(ERB.new(IO.read(yml_path)).result)[self.env] rescue nil || {}
     end
 
     def yml_path
